@@ -15,38 +15,28 @@ width,height = palette.size
 for y in range(height):
     for x in range(width):
         curpixel = palette.getpixel((x,y))
-        pixelsL.append((GetLuminance(curpixel),curpixel))
-
-
-#sort the pixels
-pixelsL.sort()
-pallen = len(pixelsL)
+        pixels.append(curpixel)
+        pixelsL.append(GetLuminance(curpixel))
 
 print "Painting new picture..."
 source = Image.open("2.png")
 width,height = source.size
 for y in range(height):
     print str(y) + " of " + str(height)
-    try:
-        source.save("o.png","PNG")
-    except:
-        pass
+    source.save("o.png","PNG")
     for x in range(width):
         l = GetLuminance(source.getpixel((x,y)))
         bestdist = 256*256
-        best = 0
-        for pos in range(pallen):
-            pl,pixel = pixelsL[pos]
-            dist = (l-pl)
+        for p in range(len(pixelsL)):
+            dist = (pixelsL[p]-l)
             dist = dist*dist
             if dist<bestdist:
-                    bestdist = dist
-                    bestpixel = pixel
-                    best = pos
+                bestdist = dist
+                best = p
                     
-        source.putpixel((x,y),bestpixel)
+        source.putpixel((x,y),pixels[best])
+        pixels = pixels[0:best]+pixels[best+1:]
         pixelsL = pixelsL[0:best]+pixelsL[best+1:]
-        pallen = pallen-1
 
 print "Applying fixative..."
 source.save("o.png","PNG")
